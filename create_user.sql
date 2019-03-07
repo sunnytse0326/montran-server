@@ -12,5 +12,3 @@ CREATE TABLE IF NOT EXISTS User (
     balance DECIMAL NOT NULL,
     create_at DATE
 );
-
-INSERT INTO User VALUES (1,'Test','User','hash12345678',0,CURDATE())
