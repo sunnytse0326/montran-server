@@ -1,53 +1,82 @@
 package com.montran.server.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
+@Table(name = "User")
 public class Customer {
     @Id
+    @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private final long id;
-    private final String firstName;
-    private final String lastName;
-    private final BigDecimal balance;
-    private final String password;
-    private final Date create_at;
-
-    public Customer(long id, String firstName, String lastName, BigDecimal balance, String password, Date create_at) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.balance = balance;
-        this.password = password;
-        this.create_at = create_at;
-    }
+    private long id;
+    @Column(name = "first_name")
+    private String firstName;
+    @Column(name = "last_name")
+    private String lastName;
+    @Column(name = "email")
+    private String email;
+    @Column(name = "balance")
+    private BigDecimal balance;
+    @Column(name = "password")
+    private String password;
+    @Column(name = "create_at")
+    private Date createAt;
 
     public long getId() {
         return id;
+    }
+
+    public void setId(long id){
+        this.id = id;
     }
 
     public String getFirstName() {
         return firstName;
     }
 
+    public void setFirstName(String firstName){
+        this.firstName = firstName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email){
+        this.email = email;
+    }
+
     public String getLastName() {
         return lastName;
+    }
+
+    public void setLastName(String lastName){
+        this.lastName = lastName;
     }
 
     public BigDecimal getBalance() {
         return balance;
     }
 
+    public void setBalance(BigDecimal balance){
+        this.balance = balance;
+    }
+
     public String getPassword() {
         return password;
     }
 
-    public Date getCreate_at() {
-        return create_at;
+    public void setPassword(String password){
+        this.password = password;
+    }
+
+    public Date getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(Date createAt){
+        this.createAt = createAt;
     }
 }
