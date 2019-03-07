@@ -1,16 +1,21 @@
 package com.montran.server.controller;
 
 import com.montran.server.model.Customer;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.montran.server.repository.CustomerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
 @RestController
 public class CustomerController {
-    @RequestMapping("/getBalance")
-    public Customer greeting(@RequestParam(value="name", defaultValue="World") String name) {
-        return new Customer(0, "", "", BigDecimal.ZERO);
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @GetMapping(path="/all")
+    public @ResponseBody
+    Iterable<Customer> getAllUsers() {
+        return customerRepository.findAll();
     }
+
 }
