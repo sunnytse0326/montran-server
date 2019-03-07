@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS User (
     last_name VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     balance DECIMAL NOT NULL,
-    create_date DATE
+    create_at DATE
 );
 
 INSERT INTO User VALUES (1,'Test','User','hash12345678',0,CURDATE())
