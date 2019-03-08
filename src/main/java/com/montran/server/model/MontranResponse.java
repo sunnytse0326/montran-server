@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class MontranResponse {
     private boolean success;
-    private Object value;
+    private Object values;
     private ArrayList<MontranAPIError> errors;
 
     public boolean getSuccess() {
@@ -15,12 +15,12 @@ public class MontranResponse {
         this.success = success;
     }
 
-    public Object getValue() {
-        return value;
+    public Object getValues() {
+        return values;
     }
 
-    public void setValue(Object value){
-        this.value = value;
+    public void setValues(Object values){
+        this.values = values;
     }
 
     public ArrayList<MontranAPIError> getErrors() {
