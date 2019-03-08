@@ -30,9 +30,13 @@ public class CustomerController {
         MontranResponse response = new MontranResponse();
 
         if(!Utils.isEmailValid(email)){
-            return createSingleError(response, MontranAPIError.ErrorType.DATA_ERROR_FORMAT, "Email format is incorrect.");
+            response.setSuccess(false);
+            response.setErrors(Utils.createSingleError(MontranAPIError.ErrorType.DATA_ERROR_FORMAT, "Email format is incorrect."));
+            return response;
         } else if (customerRepository.existsByEmail(email)) {
-            return createSingleError(response, MontranAPIError.ErrorType.DUPLICATE_RECORD, "Email is Duplicated.");
+            response.setSuccess(false);
+            response.setErrors(Utils.createSingleError(MontranAPIError.ErrorType.DUPLICATE_RECORD, "Email is Duplicated."));
+            return response;
         } else{
             Customer user = new Customer(firstName, lastName, email, password);
             customerRepository.save(user);
@@ -42,15 +46,5 @@ public class CustomerController {
         }
     }
 
-    private MontranResponse createSingleError(MontranResponse response, MontranAPIError.ErrorType errorType, String errorMessage){
-        ArrayList<MontranAPIError> errors = new ArrayList<>();
-        response.setSuccess(false);
-        MontranAPIError error = new MontranAPIError();
-        error.setStatus(errorType.toString());
-        error.setMessage(errorMessage);
-        errors.add(error);
-        response.setErrors(errors);
-        return response;
-    }
 
 }
