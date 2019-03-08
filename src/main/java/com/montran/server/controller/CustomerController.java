@@ -5,6 +5,7 @@ import com.montran.server.model.Customer;
 import com.montran.server.model.MontranAPIError;
 import com.montran.server.model.MontranResponse;
 import com.montran.server.repository.CustomerRepository;
+import com.montran.server.security.MontranJWTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,12 +18,23 @@ public class CustomerController {
     @GetMapping(path = "/all")
     public @ResponseBody
     Iterable<Customer> getAllUsers() {
+        //String data = MontranJWTService.getInstance().generatorJWT();
+        //System.out.println(MontranJWTService.getInstance().verifyJWT(data));
+
         return customerRepository.findAll();
     }
 
-    @GetMapping(path = "/create")
+    @GetMapping(path = "/login")
     public @ResponseBody
-    MontranResponse addNewUser(@RequestParam String email, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String password) {
+    MontranResponse login(@RequestParam String email, @RequestParam String password) {
+        MontranResponse response = new MontranResponse();
+
+        return response;
+    }
+
+    @GetMapping(path = "/register")
+    public @ResponseBody
+    MontranResponse register(@RequestParam String email, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String password) {
         MontranResponse response = new MontranResponse();
 
         if(!Utils.isEmailValid(email)){
