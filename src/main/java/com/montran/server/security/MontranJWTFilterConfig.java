@@ -1,6 +1,7 @@
 package com.montran.server.security;
 
 
+import com.montran.server.model.MontranJWT;
 import com.montran.server.security.filter.JWTAuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,9 +15,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import javax.servlet.http.HttpServletResponse;
 
 @EnableWebSecurity
-public class MontranSecurityConfig extends WebSecurityConfigurerAdapter {
+public class MontranJWTFilterConfig extends WebSecurityConfigurerAdapter {
     @Autowired
-    private MontranJWTConfig jwtConfig;
+    private MontranJWT jwtConfig;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -27,9 +28,10 @@ public class MontranSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
                 .anyRequest().authenticated();
+        System.
     }
     @Bean
-    public MontranJWTConfig jwtConfig() {
-        return new MontranJWTConfig();
+    public MontranJWT jwtConfig() {
+        return new MontranJWT();
     }
 }

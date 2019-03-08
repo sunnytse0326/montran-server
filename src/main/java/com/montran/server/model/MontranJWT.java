@@ -1,8 +1,8 @@
-package com.montran.server.security;
+package com.montran.server.model;
 
 import org.springframework.beans.factory.annotation.Value;
 
-public class MontranJWTConfig {
+public class MontranJWT {
     @Value("${security.jwt.uri:/auth/**}")
     private String Uri;
 

@@ -1,6 +1,6 @@
 package com.montran.server.security.filter;
 
-import com.montran.server.security.MontranJWTConfig;
+import com.montran.server.model.MontranJWT;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 
 public class JWTAuthFilter extends OncePerRequestFilter {
     
-	private final MontranJWTConfig config;
+	private final MontranJWT config;
 	
-	public JWTAuthFilter(MontranJWTConfig config) {
+	public JWTAuthFilter(MontranJWT config) {
 		this.config = config;
 	}
 
@@ -52,7 +52,6 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 		} catch (Exception e) {
 			SecurityContextHolder.clearContext();
 		}
-
 		chain.doFilter(request, response);
 	}
 
