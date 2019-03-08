@@ -24,6 +24,17 @@ public class Customer {
     @Column(name = "create_at")
     private Date createAt;
 
+    public Customer(){}
+
+    public Customer(String firstName, String lastName, String email, String password){
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.balance = BigDecimal.ZERO;
+        this.createAt = new Date();
+    }
+
     public long getId() {
         return id;
     }
