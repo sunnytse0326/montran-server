@@ -8,10 +8,6 @@ import com.montran.server.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-
 @RestController
 @RequestMapping(path = "/user")
 public class CustomerController {
