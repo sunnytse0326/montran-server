@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS User (
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    balance DECIMAL NOT NULL,
+    balanceHKD DECIMAL NOT NULL,
+    balanceUSD DECIMAL NOT NULL,
     create_at DATE
 );

@@ -8,7 +8,15 @@ import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.AsyncRestTemplate;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 @RestController
 @RequestMapping(path = "/user")
@@ -33,9 +41,67 @@ public class CustomerController {
         return customerRepository.findAll();
     }
 
+    @GetMapping(path = "/transaction")
+    public @ResponseBody
+    Mono<ResponseEntity<MontranResponse>> makeTransaction(@RequestHeader String authorization, @RequestBody MontranTransactionBody body) {
+        Mono<ResponseEntity<MontranResponse>> result;
+        ResponseEntity<MontranResponse> entity;
+
+        MontranResponse response = new MontranResponse();
+        HttpHeaders responseHeaders = new HttpHeaders();
+        MontranJWTService service = MontranJWTService.getInstance();
+
+        String transactionID = body.getTransactionId();
+
+        Function<MontranResponse, ResponseEntity<MontranResponse>> entityFunction = res -> ResponseEntity.ok().headers(responseHeaders).body(response);
+
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
+            response.setSuccess(false);
+            response.setErrors(Utils.createSingleError(MontranAPIError.ErrorType.DATA_ERROR_FORMAT, "Transaction must need a session token."));
+            return Mono.just(response).map(entityFunction);
+        } else if (transactionID == null) {
+            response.setSuccess(false);
+            response.setErrors(Utils.createSingleError(MontranAPIError.ErrorType.DATA_ERROR_FORMAT, "Transaction must need a transaction ID."));
+            return Mono.just(response).map(entityFunction);
+        }
+        String sessionToken = authorization.replace("Bearer ", "");
+        Claims claims = service.getJWTClaimerInfo(sessionToken);
+
+        if (claims == null || (claims.get(service.getEmailTag()) != null && !(claims.get(service.getEmailTag()) instanceof String))) {
+            response.setSuccess(false);
+            response.setErrors(Utils.createSingleError(MontranAPIError.ErrorType.UNEXPECTED_ERROR, "Invalid session token."));
+            return Mono.just(response).map(entityFunction);
+        } else {
+            WebClient webClient = service.getWebClientBuilder().build();
+            return webClient.get().uri(service.getTransactionURL()).retrieve().bodyToMono(MontranTransactionResponse.class)
+                    .map(res -> {
+                        if(!res.isSuccess()){
+                            response.setSuccess(false);
+                            response.setErrors(Utils.createSingleError(MontranAPIError.ErrorType.DATA_ERROR_FORMAT, "Transaction failed."));
+                            return ResponseEntity.ok().headers(responseHeaders).body(response);
+                        } else{
+                            response.setSuccess(true);
+
+                            String email = (String) claims.get(service.getEmailTag());
+                            Customer customer = customerRepository.findCustomerByEmail(email);
+                            if(res.getCurrency().equals(Customer.CurrencyType.HKD.toString())){
+                                customer.setBalanceHKD(customer.getBalanceHKD().add(res.getAmount()));
+                                customerRepository.save(customer);
+                            } else if(res.getCurrency().equals(Customer.CurrencyType.USD.toString())){
+                                customer.setBalanceHKD(customer.getBalanceUSD().add(res.getAmount()));
+                                customerRepository.save(customer);
+                            }
+                            response.setValues(customer);
+                            return ResponseEntity.ok().headers(responseHeaders).body(response);
+                        }
+                    });
+        }
+    }
+
+
     @GetMapping(path = "/me")
     public @ResponseBody
-    ResponseEntity<MontranResponse> me(@RequestHeader String authorization) {
+    ResponseEntity<MontranResponse> getMyProfile(@RequestHeader String authorization) {
         MontranResponse response = new MontranResponse();
         HttpHeaders responseHeaders = new HttpHeaders();
         MontranJWTService service = MontranJWTService.getInstance();
@@ -69,7 +135,6 @@ public class CustomerController {
                 }
             }
         }
-
         return ResponseEntity.ok()
                 .headers(responseHeaders)
                 .body(response);

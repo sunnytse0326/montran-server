@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.security.Key;
 import java.util.Date;
@@ -18,6 +19,10 @@ public class MontranJWTService {
     private String issuerTag = "issuerTag";
     private String passwordSalt = "$2a$10$7URlO.wjhgFPHZpzXZi2I.";
 
+    private String transactionURL = "https://sunnytse0326.github.io/MockJson/transaction/result.json";
+
+    private WebClient.Builder webClientBuilder;
+
     private JwtBuilder jwtBuilder;
     private long expirationTime = 60 * 60 * 24 * 1000;
     private Key key;
@@ -28,6 +33,7 @@ public class MontranJWTService {
     private MontranJWTService() {
         key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
         passwordEncoder = new BCryptPasswordEncoder();
+        webClientBuilder = WebClient.builder();
 
         jwtBuilder = Jwts.builder();
         jwtBuilder.setSubject(subjectKey);
@@ -76,6 +82,14 @@ public class MontranJWTService {
 
     public String getEmailTag(){
         return emailTag;
+    }
+
+    public String getTransactionURL(){
+        return transactionURL;
+    }
+
+    public WebClient.Builder getWebClientBuilder(){
+        return webClientBuilder;
     }
 
     @Bean

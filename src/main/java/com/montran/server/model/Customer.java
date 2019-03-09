@@ -19,13 +19,17 @@ public class Customer {
     private String lastName;
     @Column(name = "email")
     private String email;
-    @Column(name = "balance")
-    private BigDecimal balance;
+    @Column(name = "balanceHKD")
+    private BigDecimal balanceHKD;
+    @Column(name = "balanceUSD")
+    private BigDecimal balanceUSD;
     @Column(name = "password")
     @JsonIgnore
     private String password;
     @Column(name = "create_at")
     private Date createAt;
+
+    public enum CurrencyType { HKD, USD }
 
     public Customer(){}
 
@@ -34,7 +38,8 @@ public class Customer {
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.balance = BigDecimal.ZERO;
+        this.balanceHKD = BigDecimal.ZERO;
+        this.balanceUSD = BigDecimal.ZERO;
         this.createAt = new Date();
     }
 
@@ -70,12 +75,20 @@ public class Customer {
         this.lastName = lastName;
     }
 
-    public BigDecimal getBalance() {
-        return balance;
+    public BigDecimal getBalanceUSD() {
+        return balanceUSD;
     }
 
-    public void setBalance(BigDecimal balance){
-        this.balance = balance;
+    public void setBalanceUSD(BigDecimal balanceUSD) {
+        this.balanceUSD = balanceUSD;
+    }
+
+    public BigDecimal getBalanceHKD() {
+        return balanceHKD;
+    }
+
+    public void setBalanceHKD(BigDecimal balance){
+        this.balanceHKD = balance;
     }
 
     public String getPassword() {
