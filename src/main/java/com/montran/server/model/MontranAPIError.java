@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class MontranAPIError {
     public enum ErrorType {
-        DUPLICATE_RECORD, RECORD_NOT_FOUND, UNEXPECTED_ERROR, DATA_ERROR_FORMAT
+        DUPLICATE_RECORD, RECORD_NOT_FOUND, INCORRECT_DATA, UNEXPECTED_ERROR, DATA_ERROR_FORMAT
     }
 
     private String status;

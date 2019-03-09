@@ -1,5 +1,7 @@
 package com.montran.server.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -20,6 +22,7 @@ public class Customer {
     @Column(name = "balance")
     private BigDecimal balance;
     @Column(name = "password")
+    @JsonIgnore
     private String password;
     @Column(name = "create_at")
     private Date createAt;

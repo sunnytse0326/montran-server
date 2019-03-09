@@ -33,11 +33,30 @@ public class CustomerController {
 
     @GetMapping(path = "/login")
     public @ResponseBody
-    MontranResponse login(@RequestParam String email, @RequestParam String password) {
+    ResponseEntity<MontranResponse>  login(@RequestParam String email, @RequestParam String password) {
         MontranResponse response = new MontranResponse();
+        HttpHeaders responseHeaders = new HttpHeaders();
+        Customer customer = customerRepository.findCustomerByEmail(email);
 
+        if(customer == null){
+            response.setSuccess(false);
+            response.setErrors(Utils.createSingleError(MontranAPIError.ErrorType.RECORD_NOT_FOUND, "User email is not registered."));
+        } else{
+            System.out.println(customer.getPassword());
+            System.out.println(MontranJWTService.getInstance().hashPassword(password));
 
-        return response;
+            if(!customer.getPassword().equals(MontranJWTService.getInstance().hashPassword(password))){
+                response.setSuccess(false);
+                response.setErrors(Utils.createSingleError(MontranAPIError.ErrorType.INCORRECT_DATA, "Password is incorrect."));
+            } else{
+                response.setSuccess(true);
+                response.setValues(customer);
+                responseHeaders.add(sessionTokenTag, MontranJWTService.getInstance().generatorJWT());
+            }
+        }
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(response);
     }
 
     @GetMapping(path = "/register")
