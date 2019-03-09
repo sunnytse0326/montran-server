@@ -7,11 +7,15 @@ import com.montran.server.model.MontranResponse;
 import com.montran.server.repository.CustomerRepository;
 import com.montran.server.security.MontranJWTService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/user")
 public class CustomerController {
+    private String sessionTokenTag = "session-token";
+
     @Autowired
     private CustomerRepository customerRepository;
 
@@ -29,29 +33,32 @@ public class CustomerController {
     MontranResponse login(@RequestParam String email, @RequestParam String password) {
         MontranResponse response = new MontranResponse();
 
+
         return response;
     }
 
     @GetMapping(path = "/register")
     public @ResponseBody
-    MontranResponse register(@RequestParam String email, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String password) {
+    ResponseEntity<MontranResponse> register(@RequestParam String email, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String password) {
+        HttpHeaders responseHeaders = new HttpHeaders();
         MontranResponse response = new MontranResponse();
 
         if(!Utils.isEmailValid(email)){
             response.setSuccess(false);
             response.setErrors(Utils.createSingleError(MontranAPIError.ErrorType.DATA_ERROR_FORMAT, "Email format is incorrect."));
-            return response;
         } else if (customerRepository.existsByEmail(email)) {
             response.setSuccess(false);
             response.setErrors(Utils.createSingleError(MontranAPIError.ErrorType.DUPLICATE_RECORD, "Email is Duplicated."));
-            return response;
         } else{
             Customer user = new Customer(firstName, lastName, email, password);
             customerRepository.save(user);
             response.setSuccess(true);
             response.setValues(user);
-            return response;
+            responseHeaders.add(sessionTokenTag, MontranJWTService.getInstance().generatorJWT());
         }
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(response);
     }
 
 
