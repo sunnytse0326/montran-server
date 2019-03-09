@@ -14,6 +14,8 @@ import java.util.Date;
 public class MontranJWTService {
     private String subjectKey = "auth0";
     private String issuer = "montran";
+    private String emailTag = "email";
+    private String issuerTag = "issuerTag";
     private String passwordSalt = "$2a$10$7URlO.wjhgFPHZpzXZi2I.";
 
     private JwtBuilder jwtBuilder;
@@ -29,37 +31,51 @@ public class MontranJWTService {
 
         jwtBuilder = Jwts.builder();
         jwtBuilder.setSubject(subjectKey);
-        jwtBuilder.claim("issuer", issuer);
+        jwtBuilder.claim(issuerTag, issuer);
         jwtBuilder.setIssuedAt(new Date());
         jwtBuilder.signWith(key);
         jwtBuilder.setExpiration(new Date(new Date().getTime() + expirationTime));
     }
 
     public static MontranJWTService getInstance() {
-        if(instance == null){
+        if (instance == null) {
             instance = new MontranJWTService();
         }
         return instance;
     }
 
-    public String generatorJWT() {
-        return jwtBuilder.compact();
+    public String generatorJWT(String email) {
+        return jwtBuilder.claim(emailTag, email).compact();
     }
 
     public boolean verifyJWT(String token) {
         try {
             Jws<Claims> jws = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
-            return jws.getBody().get("issuer").equals(issuer);
-        } catch (JwtException ex) { }
+            return jws.getBody().get(issuerTag).equals(issuer);
+        } catch (JwtException ex) {
+        }
         return false;
     }
 
-    public String hashPassword(String password){
+    public Claims getJWTClaimerInfo(String token) {
+        try {
+            Jws<Claims> jws = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
+            return jws.getBody();
+        } catch (JwtException ex) {
+        }
+        return null;
+    }
+
+    public String hashPassword(String password) {
         return BCrypt.hashpw(password, passwordSalt);
     }
 
-    public boolean verifyPassword(String password, String hash){
+    public boolean verifyPassword(String password, String hash) {
         return BCrypt.checkpw(password, hash);
+    }
+
+    public String getEmailTag(){
+        return emailTag;
     }
 
     @Bean
