@@ -25,6 +25,9 @@ public class CustomerController {
         //String data = MontranJWTService.getInstance().generatorJWT();
         //System.out.println(MontranJWTService.getInstance().verifyJWT(data));
 
+        //System.out.println("123456 = " + MontranJWTService.getInstance().hashPassword("123456"));
+        //System.out.println("123456 = " + MontranJWTService.getInstance().verifyPassword("123456", MontranJWTService.getInstance().hashPassword("123456")));
+
         return customerRepository.findAll();
     }
 
@@ -50,7 +53,7 @@ public class CustomerController {
             response.setSuccess(false);
             response.setErrors(Utils.createSingleError(MontranAPIError.ErrorType.DUPLICATE_RECORD, "Email is Duplicated."));
         } else{
-            Customer user = new Customer(firstName, lastName, email, password);
+            Customer user = new Customer(firstName, lastName, email, MontranJWTService.getInstance().hashPassword(password));
             customerRepository.save(user);
             response.setSuccess(true);
             response.setValues(user);
