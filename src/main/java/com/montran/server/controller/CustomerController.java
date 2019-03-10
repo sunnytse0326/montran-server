@@ -26,22 +26,7 @@ public class CustomerController {
     @Autowired
     private CustomerRepository customerRepository;
 
-    @GetMapping(path = "/all")
-    public @ResponseBody
-    Iterable<Customer> getAllUsers() {
-        //String data = MontranJWTService.getInstance().generatorJWT();
-        //System.out.println(MontranJWTService.getInstance().verifyJWT(data));
-
-        //System.out.println("123456 = " + MontranJWTService.getInstance().hashPassword("123456"));
-        //System.out.println("123456 = " + MontranJWTService.getInstance().verifyPassword("123456", MontranJWTService.getInstance().hashPassword("123456")));
-
-        //System.out.println(customer.getPassword());
-        //System.out.println(MontranJWTService.getInstance().hashPassword(password));
-
-        return customerRepository.findAll();
-    }
-
-    @GetMapping(path = "/transaction")
+    @PostMapping(path = "/transaction")
     public @ResponseBody
     Mono<ResponseEntity<MontranResponse>> makeTransaction(@RequestHeader String authorization, @RequestBody MontranTransactionBody body) {
         Mono<ResponseEntity<MontranResponse>> result;
@@ -81,7 +66,6 @@ public class CustomerController {
                             return ResponseEntity.ok().headers(responseHeaders).body(response);
                         } else{
                             response.setSuccess(true);
-
                             String email = (String) claims.get(service.getEmailTag());
                             Customer customer = customerRepository.findCustomerByEmail(email);
                             if(res.getCurrency().equals(Customer.CurrencyType.HKD.toString())){
@@ -142,7 +126,7 @@ public class CustomerController {
 
     @PostMapping(path = "/login")
     public @ResponseBody
-    ResponseEntity<MontranResponse> login(@RequestParam MontranLoginBody body) {
+    ResponseEntity<MontranResponse> login(@RequestBody MontranLoginBody body) {
         String email = body.getEmail();
         String password = body.getPassword();
 
